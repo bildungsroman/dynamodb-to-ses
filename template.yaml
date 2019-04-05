@@ -4,7 +4,7 @@ Resources:
   writeToTable:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${AWS::StackName}-writeTophotoTable
+      FunctionName: !Sub ${AWS::StackName}-writeToServerTable
       Description: !Sub
         - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
         - ResourceName: writeToTable
@@ -17,30 +17,15 @@ Resources:
       Policies:
         - AWSXrayWriteOnlyAccess
         - DynamoDBCrudPolicy:
-            TableName: !Ref photoTable
+            TableName: !Ref ServerTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref photoTable
-          TABLE_ARN: !GetAtt photoTable.Arn
+          TABLE_NAME: !Ref ServerTable
+          TABLE_ARN: !GetAtt ServerTable.Arn
           UNSPLASH_ACCESS_KEY: !Ref EnvConfigunsplashaccessKeyAsString
           UNSPLASH_SECRET_KEY: !Ref EnvConfigunsplashsecretKeyAsString
     Metadata:
       StackeryName: writeToTable
-  photoTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
-      BillingMode: PAY_PER_REQUEST
-      KeySchema:
-        - AttributeName: id
-          KeyType: HASH
-      StreamSpecification:
-        StreamViewType: NEW_AND_OLD_IMAGES
-      TableName: !Sub ${AWS::StackName}-photoTable
-    Metadata:
-      StackeryName: photoTable
   sendDailyEmail:
     Type: AWS::Serverless::Function
     Properties:
@@ -57,13 +42,35 @@ Resources:
       Policies:
         - AWSXrayWriteOnlyAccess
         - DynamoDBCrudPolicy:
-            TableName: !Ref photoTable
+            TableName: !Ref ServerTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref photoTable
-          TABLE_ARN: !GetAtt photoTable.Arn
+          TABLE_NAME: !Ref ServerTable
+          TABLE_ARN: !GetAtt ServerTable.Arn
+      Events:
+        Timer:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 16 * * ? *)
+          Metadata:
+            StackeryName: dailyEmailTrigger
     Metadata:
       StackeryName: sendDailyEmail
+  ServerTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-ServerTable
+    Metadata:
+      StackeryName: ServerTable
 Parameters:
   StackTagName:
     Type: String
