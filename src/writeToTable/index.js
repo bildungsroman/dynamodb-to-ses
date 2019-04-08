@@ -10,15 +10,14 @@ const unsplash = new Unsplash({
 exports.handler = async () => {
   let result;
   // get items from the unsplash api
-  try {
-    const getPhotos = await unsplash.search.photos('servers');
-    if (getPhotos) {
-      result = toJson(getPhotos);
-      console.log(result);
-    }
-  } catch (error) {
-    console.log('Error getting photos');
-  }
+  unsplash.search.photos('servers')
+  .then(toJson)
+  .then(json => {
+    // Your code
+    console.log(json)
+  });
+
+  // filter our actual restaurant servers. That's not what we're going for
 
   
   // write new items to the ServerTable
