@@ -14,6 +14,8 @@ exports.handler = async () => {
   .then(toJson)
   .then(json => {
     // Your code
+    result = json;
+    console.log('=================================')
     console.log(json)
   });
 
