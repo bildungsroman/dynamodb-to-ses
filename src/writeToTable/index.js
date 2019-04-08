@@ -9,10 +9,15 @@ const unsplash = new Unsplash({
 
 exports.handler = async () => {
   // get items from the unsplash api
-  const getPhotos = await unsplash.search.photos('servers');
+  try {
+    const getPhotos = await unsplash.search.photos('servers');
+    const result = toJson(getPhotos);
+    console.log(result);
+  } catch (error) {
+    console.log('Error getting photos');
+  }
 
-  const result = toJson(getPhotos);
-
+  
   // write new items to the ServerTable
   // duplicate entries will be skipped
   const dynamodb = new AWS.DynamoDB.DocumentClient();
