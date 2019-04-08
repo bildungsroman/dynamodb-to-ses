@@ -8,10 +8,11 @@ const unsplash = new Unsplash({
 });
 
 exports.handler = async () => {
+  let result;
   // get items from the unsplash api
   try {
     const getPhotos = await unsplash.search.photos('servers');
-    const result = toJson(getPhotos);
+    result = toJson(getPhotos);
     console.log(result);
   } catch (error) {
     console.log('Error getting photos');
