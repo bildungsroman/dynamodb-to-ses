@@ -7,21 +7,26 @@ const unsplash = new Unsplash({
   secret: process.env.UNSPLASH_SECRET_KEY
 });
 
-exports.handler = async () => {
-  let result;
+async function getPhotos () {
   // get items from the unsplash api
-  unsplash.search.photos('servers')
-  .then(toJson)
-  .then(json => {
-    // Your code
-    result = json;
-    console.log('=================================')
-    console.log(json)
+  try {
+    const getServerPhotos = await unsplash.search.photos('servers');
+    const json = await toJson(getServerPhotos);
+    const photos = await json.results;
+    // filter out restaurant servers - that's not what we're going for
+    const nonHumanServers = await photos.filter( photo => {
+      return photo.description.includes('computer') || photo.alt_description.includes('computer') || photo.description.includes('data') || photo.alt_description.includes('data');
+    });
+    return nonHumanServers;
+  } catch (error) {
+    console.log('Error getting photos');
+  }
+}
+
+exports.handler = async () => {
+  getPhotos().then( photos => {
+    console.log(photos);
   });
-
-  // filter our actual restaurant servers. That's not what we're going for
-
-  
   // write new items to the ServerTable
   // duplicate entries will be skipped
   const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -75,7 +80,7 @@ exports.handler = async () => {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(result)
+    body: JSON.stringify(results)
   };
 
   return response;
