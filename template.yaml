@@ -23,13 +23,6 @@ Resources:
           TABLE_NAME: !Ref ServerTable
           TABLE_ARN: !GetAtt ServerTable.Arn
           FLICKR_API_KEY: !Ref EnvConfigflickrapiKeyAsString
-      Events:
-        testingAPIGET:
-          Type: Api
-          Properties:
-            Path: /
-            Method: GET
-            RestApiId: !Ref testingAPI
     Metadata:
       StackeryName: writeToTable
   sendDailyEmail:
@@ -77,28 +70,6 @@ Resources:
       TableName: !Sub ${AWS::StackName}-ServerTable
     Metadata:
       StackeryName: ServerTable
-  testingAPI:
-    Type: AWS::Serverless::Api
-    Properties:
-      Name: !Sub
-        - ${ResourceName} From Stack ${StackTagName} Environment ${EnvironmentTagName}
-        - ResourceName: testingAPI
-      StageName: !Ref EnvironmentAPIGatewayStageName
-      DefinitionBody:
-        swagger: '2.0'
-        info: {}
-        paths:
-          /:
-            get:
-              x-amazon-apigateway-integration:
-                httpMethod: POST
-                type: aws_proxy
-                uri: !Sub arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${writeToTable.Arn}/invocations
-              responses: {}
-      EndpointConfiguration: REGIONAL
-      TracingEnabled: true
-    Metadata:
-      StackeryName: testingAPI
 Parameters:
   StackTagName:
     Type: String
@@ -106,9 +77,6 @@ Parameters:
   EnvironmentTagName:
     Type: String
     Description: Environment Name (injected by Stackery at deployment time)
-  EnvironmentAPIGatewayStageName:
-    Type: String
-    Description: Environment name used for API Gateway Stage names (injected by Stackery at deployment time)
   EnvConfigflickrapiKeyAsString:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /<EnvironmentName>/flickr/apiKey
