@@ -22,8 +22,7 @@ Resources:
         Variables:
           TABLE_NAME: !Ref ServerTable
           TABLE_ARN: !GetAtt ServerTable.Arn
-          UNSPLASH_ACCESS_KEY: !Ref EnvConfigunsplashaccessKeyAsString
-          UNSPLASH_SECRET_KEY: !Ref EnvConfigunsplashsecretKeyAsString
+          FLICKR_API_KEY: !Ref EnvConfigflickrapiKeyAsString
       Events:
         testingAPIGET:
           Type: Api
@@ -107,16 +106,12 @@ Parameters:
   EnvironmentTagName:
     Type: String
     Description: Environment Name (injected by Stackery at deployment time)
-  EnvConfigunsplashaccessKeyAsString:
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: /<EnvironmentName>/unsplash/accessKey
-  EnvConfigunsplashsecretKeyAsString:
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: /<EnvironmentName>/unsplash/secretKey
   EnvironmentAPIGatewayStageName:
     Type: String
     Description: Environment name used for API Gateway Stage names (injected by Stackery at deployment time)
+  EnvConfigflickrapiKeyAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/flickr/apiKey
 Metadata:
   EnvConfigParameters:
-    EnvConfigunsplashaccessKeyAsString: unsplash.accessKey
-    EnvConfigunsplashsecretKeyAsString: unsplash.secretKey
+    EnvConfigflickrapiKeyAsString: flickr.apiKey
