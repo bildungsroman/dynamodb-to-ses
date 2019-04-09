@@ -1,0 +1,5 @@
+run-locally.js
+.DS_Store
+node_modules/
+src/writeToTable/node_modules/
+src/sendDailyEmail/node_modules/
