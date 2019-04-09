@@ -42,6 +42,8 @@ Resources:
         - AWSXrayWriteOnlyAccess
         - DynamoDBCrudPolicy:
             TableName: !Ref ServerTable
+        - SESCrudPolicy:
+            IdentityName: anna.spysz@stackery.io
       Environment:
         Variables:
           TABLE_NAME: !Ref ServerTable
