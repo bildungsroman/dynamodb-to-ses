@@ -46,6 +46,8 @@ Resources:
         Variables:
           TABLE_NAME: !Ref ServerTable
           TABLE_ARN: !GetAtt ServerTable.Arn
+          TO_EMAIL: !Ref EnvConfigserverEmailtoEmailAsString
+          FROM_EMAIL: !Ref EnvConfigserverEmailfromEmailAsString
       Events:
         Timer:
           Type: Schedule
@@ -80,6 +82,14 @@ Parameters:
   EnvConfigflickrapiKeyAsString:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /<EnvironmentName>/flickr/apiKey
+  EnvConfigserverEmailtoEmailAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/serverEmail/toEmail
+  EnvConfigserverEmailfromEmailAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/serverEmail/fromEmail
 Metadata:
   EnvConfigParameters:
     EnvConfigflickrapiKeyAsString: flickr.apiKey
+    EnvConfigserverEmailtoEmailAsString: serverEmail.toEmail
+    EnvConfigserverEmailfromEmailAsString: serverEmail.fromEmail
