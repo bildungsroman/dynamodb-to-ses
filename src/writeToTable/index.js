@@ -20,11 +20,14 @@ async function getPhotos () {
     return nonHumanServers;
   } catch (error) {
     console.log('Error getting photos');
+    console.log(error);
   }
 }
 
 exports.handler = async () => {
+  let results;
   getPhotos().then( photos => {
+    results = photos;
     console.log(photos);
   });
   // write new items to the ServerTable
