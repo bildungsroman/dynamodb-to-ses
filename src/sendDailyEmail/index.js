@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk');
 
 exports.handler = async () => {
-  // Get server photos from ServerTable
+  // Get server photos from the ServerTable
   const dynamodb = new AWS.DynamoDB.DocumentClient();
   const params = {
     TableName: process.env.TABLE_NAME
@@ -26,7 +26,7 @@ exports.handler = async () => {
     body = await generateEmailBody(dailyPhoto, today);
     header = `Daily Server Email`;
     // Send the email
-    console.log(`Sending email to ${process.env.SEND_EMAIL}.`);
+    console.log(`Sending email to ${process.env.TO_EMAIL}.`);
     await sendEmail(header, body);
     console.log(`Email sent`);
   } catch (error) {
@@ -54,17 +54,19 @@ function generateEmailBody (photo, today) {
   const header = `<h1>✨ An Important Reminder ✨</h1>`;
   const subHeader = `<h2>${getPrettyDate(today)}</h2>`;
   const photoSection = `
-    <div class='main'>
-      <h3>Yes, there are still servers in serverless. Here is one:</h3>
-      <img src='${photo.url}' alt='${photo.title}'>
+    <div>
+      <h2>Yes, there are still servers in serverless.</h2>
+      <h3>Here is one:</h3>
+      <img src='${photo.url}' width='500px' alt='${photo.title}'>
+      <p>Now that we've gotten that out of the way, let's go build something awesome with <a href="app.stackery.io">Stackery</a>!</p>
     </div>
   `;
 
   const style = `
     <style>
-      body {font-family: sans-serif;}
-      .main {
-        align: center;
+      body {
+        font-family: sans-serif;
+        text-align: center;
       }
     </style>
     `;
@@ -84,11 +86,12 @@ function generateEmailBody (photo, today) {
   `;
 };
 
+// Use AWS SES to send the email
 async function sendEmail (subject, body) {
   let params = {
     Destination: {
       ToAddresses: [
-        process.env.SEND_EMAIL
+        process.env.TO_EMAIL
       ]
     },
     Message: {
@@ -103,13 +106,14 @@ async function sendEmail (subject, body) {
         Data: subject
       }
     },
-    Source: 'anna.spysz@stackery.io'
+    Source: process.env.FROM_EMAIL
   };
 
   const ses = new AWS.SES();
   await ses.sendEmail(params).promise();
 }
 
+// Format the date for the email
 function getPrettyDate (date) {
   const options = {  
       weekday: 'long',
@@ -120,5 +124,5 @@ function getPrettyDate (date) {
       minute: '2-digit'
   };
 
-return date.toLocaleString('en-us', options);
+  return date.toLocaleString('en-us', options);
 }
