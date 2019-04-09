@@ -3,9 +3,9 @@ const Flickr = require('flickr-sdk');
 
 async function getPhotos () {
   const flickr = new Flickr(process.env.FLICKR_API_KEY);
-  // get photos from the flickr api
+  // Get photos from the Flickr api
   try {
-    // https://www.flickr.com/services/api/flickr.photos.search.html
+    // All options: https://www.flickr.com/services/api/flickr.photos.search.html
     const photos = await flickr.photos.search({
       text: 'servers datacenter', // the search text
       sort: 'interestingness-desc', // sort to attempt to reduce spam photos
@@ -23,12 +23,12 @@ async function getPhotos () {
 }
 
 exports.handler = async () => {
-  // fetch an array of photo objects
+  // Fetch an array of photo objects
   const photoArray = await getPhotos();
-  // write new items to the ServerTable
-  // duplicate entries will be skipped
+  // Write new items to the ServerTable
+  // Duplicate entries will be skipped
   const dynamodb = new AWS.DynamoDB.DocumentClient();
-  // we'll be using promises to make sure everything gets written when the lambda is called
+  // We'll be using promises to make sure everything gets written when the Lambda is called
   let promiseArray = [];
 
   for (let photo of photoArray) {
@@ -64,13 +64,13 @@ exports.handler = async () => {
     console.log(error);
   }
 
-  // return a 200 response if no errors
+  // Return a 200 response if no errors
   const response = {
     statusCode: 200,
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(photoArray)
+    body: 'Success!'
   };
 
   return response;
