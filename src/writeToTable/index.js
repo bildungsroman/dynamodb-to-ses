@@ -1,34 +1,29 @@
-require('isomorphic-fetch');
 const AWS = require('aws-sdk');
-const Unsplash = require('unsplash-js').default;
-const toJson = require('unsplash-js').toJson;
-const unsplash = new Unsplash({
-  applicationId: process.env.UNSPLASH_ACCESS_KEY,
-  secret: process.env.UNSPLASH_SECRET_KEY
-});
+const Flickr = require('flickr-sdk');
 
-function getPhotos () {
-  // get items from the unsplash api
-  return unsplash.search.photos('servers')
-  .then( photos => {
-    toJson(photos)})
-    .then( photos => {
-      // filter out restaurant servers - that's not what we're going for
-      photos.results.filter( photo => {
-        return photo.description.includes('computer') || photo.alt_description.includes('computer') || photo.description.includes('data') || photo.alt_description.includes('data');
-      }).then( photos => {
-        console.log('photos');
-        console.log(photos);
-        return photos;
-      });
-    }).catch ( error => {
+async function getPhotos () {
+  const flickr = new Flickr(process.env.FLICKR_API_KEY);
+  // get items from the flickr api
+  try {
+    const photos = await flickr.photos.search({
+      text: 'servers datacenter',
+      sort: 'interestingness-desc', // sort to attempt to reduce spam photos
+      content_type: 1, // only photos
+      safe_search: 1, // only SFW photos please
+      extras: 'url_o', // we want the original image urls
+      per_page: 100
+    });
+    return photos.body.photos.photo;
+  }
+  catch (error) {
     console.log('Error getting photos');
     console.log(error);
-  });
+  }
 }
 
 exports.handler = async () => {
-  const results = await getPhotos();
+  const photoArray = await getPhotos();
+  console.log(photoArray);
   // write new items to the ServerTable
   // duplicate entries will be skipped
   const dynamodb = new AWS.DynamoDB.DocumentClient();
@@ -82,7 +77,7 @@ exports.handler = async () => {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(results)
+    body: JSON.stringify(photoArray)
   };
 
   return response;
