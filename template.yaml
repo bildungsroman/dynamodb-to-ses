@@ -10,7 +10,7 @@ Resources:
         - ResourceName: writeToTable
       CodeUri: src/writeToTable
       Handler: index.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       MemorySize: 3008
       Timeout: 30
       Tracing: Active
@@ -22,7 +22,7 @@ Resources:
         Variables:
           TABLE_NAME: !Ref ServerTable
           TABLE_ARN: !GetAtt ServerTable.Arn
-          FLICKR_API_KEY: !Ref EnvConfigflickrapiKeyAsString
+          FLICKR_API_KEY: !Ref EnvConfigflickrApiAsString
     Metadata:
       StackeryName: writeToTable
   sendDailyEmail:
@@ -34,7 +34,7 @@ Resources:
         - ResourceName: sendDailyEmail
       CodeUri: src/sendDailyEmail
       Handler: index.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       MemorySize: 3008
       Timeout: 30
       Tracing: Active
@@ -48,8 +48,8 @@ Resources:
         Variables:
           TABLE_NAME: !Ref ServerTable
           TABLE_ARN: !GetAtt ServerTable.Arn
-          TO_EMAIL: !Ref EnvConfigserverEmailtoEmailAsString
-          FROM_EMAIL: !Ref EnvConfigserverEmailfromEmailAsString
+          TO_EMAIL: !Ref EnvConfigtestEmailAsString
+          FROM_EMAIL: !Ref EnvConfigtestEmailAsString
       Events:
         Timer:
           Type: Schedule
@@ -128,23 +128,19 @@ Parameters:
   EnvironmentTagName:
     Type: String
     Description: Environment Name (injected by Stackery at deployment time)
-  EnvConfigflickrapiKeyAsString:
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: /<EnvironmentName>/flickr/apiKey
-  EnvConfigserverEmailtoEmailAsString:
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: /<EnvironmentName>/serverEmail/toEmail
-  EnvConfigserverEmailfromEmailAsString:
-    Type: AWS::SSM::Parameter::Value<String>
-    Default: /<EnvironmentName>/serverEmail/fromEmail
   DefaultVPCId:
     Type: AWS::EC2::VPC::Id
     Description: AWS account-specific default VPC ID (injected by Stackery at deployment time)
   DefaultVPCSubnets:
     Type: List<AWS::EC2::Subnet::Id>
     Description: AWS account-specific default VPC subnets (injected by Stackery at deployment time)
+  EnvConfigtestEmailAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/testEmail
+  EnvConfigflickrApiAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/flickrApi
 Metadata:
   EnvConfigParameters:
-    EnvConfigflickrapiKeyAsString: flickr.apiKey
-    EnvConfigserverEmailtoEmailAsString: serverEmail.toEmail
-    EnvConfigserverEmailfromEmailAsString: serverEmail.fromEmail
+    EnvConfigtestEmailAsString: testEmail
+    EnvConfigflickrApiAsString: flickrApi
