@@ -74,53 +74,6 @@ Resources:
       TableName: !Sub ${AWS::StackName}-ServerTable
     Metadata:
       StackeryName: ServerTable
-  Database:
-    Type: AWS::RDS::DBInstance
-    Properties:
-      BackupRetentionPeriod: '1'
-      DBSubnetGroupName: !Ref DatabaseSubnetGroup
-      Engine: postgres
-      MasterUsername: root
-      MasterUserPassword: password
-      AllocatedStorage: '5'
-      AllowMajorVersionUpgrade: true
-      AutoMinorVersionUpgrade: true
-      CopyTagsToSnapshot: true
-      DBInstanceClass: db.t2.micro
-      EngineVersion: '11.1'
-      MultiAZ: false
-      MaxCapacity: 192
-      StorageType: gp2
-      PubliclyAccessible: true
-      VPCSecurityGroups:
-        - !Ref DatabaseSecurityGroup
-  DatabaseSubnetGroup:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupDescription: !Sub
-        - Stack ${StackTagName} Environment ${EnvironmentTagName} Database ${ResourceName} VPC Subnets
-        - ResourceName: Database
-      SubnetIds: !Ref DefaultVPCSubnets
-      Tags:
-        - Key: Name
-          Value: !Sub
-            - Stack ${StackTagName} Environment ${EnvironmentTagName} Database ${ResourceName} VPC Subnets
-            - ResourceName: Database
-  DatabaseSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Database Security Group
-      SecurityGroupIngress:
-        CidrIp: 0.0.0.0/0
-        FromPort: 5432
-        IpProtocol: tcp
-        ToPort: 5432
-      Tags:
-        - Key: Name
-          Value: !Sub
-            - Stack ${StackTagName} Environment ${EnvironmentTagName} Database ${ResourceName} VPC Security Group
-            - ResourceName: Database
-      VpcId: !Ref DefaultVPCId
 Parameters:
   StackTagName:
     Type: String
@@ -128,12 +81,6 @@ Parameters:
   EnvironmentTagName:
     Type: String
     Description: Environment Name (injected by Stackery at deployment time)
-  DefaultVPCId:
-    Type: AWS::EC2::VPC::Id
-    Description: AWS account-specific default VPC ID (injected by Stackery at deployment time)
-  DefaultVPCSubnets:
-    Type: List<AWS::EC2::Subnet::Id>
-    Description: AWS account-specific default VPC subnets (injected by Stackery at deployment time)
   EnvConfigtestEmailAsString:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /<EnvironmentName>/testEmail
