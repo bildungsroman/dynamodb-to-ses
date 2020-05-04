@@ -1,7 +1,9 @@
 {
+  "name": "writetotable",
+  "version": "1.0.0",
   "private": true,
-  "dependencies": {
-    "aws-sdk": "~2",
-    "flickr-sdk": "^3.8.0"
+  "dependencies": {},
+  "devDependencies": {
+    "aws-sdk": "~2"
   }
 }
