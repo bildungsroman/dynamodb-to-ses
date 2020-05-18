@@ -54,7 +54,7 @@ Resources:
         Timer:
           Type: Schedule
           Properties:
-            Schedule: cron(0 16 * * ? *)
+            Schedule: cron(0 17 * * ? *)
           Metadata:
             StackeryName: dailyEmailTrigger
     Metadata:
